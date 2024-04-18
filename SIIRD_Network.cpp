@@ -349,12 +349,12 @@ private:
 		}
 	}
 
-	// Function which simulates the next days happenings
+	// Function that simulates the next days happenings
 	void InfectSusceptiple()
 	{
 		for (int i = 0; i < *Nodecount; i++)
 		{
-
+			// Check if infected is in infected group 1
 			if (Infected1[i])
 			{
 				for (int j = 0; j < *Nodecount; j++)
@@ -399,6 +399,7 @@ private:
 					bufferinf1_[i] = Infected1[i];
 				}
 			}
+			// Check if infected is in infected group 1
 			else if (Infected2[i])
 			{
 				for (int j = 0; j < *Nodecount; j++)
@@ -479,6 +480,7 @@ public:
 		AdjacencyMatrix = adjacency_.getDptr();
 		FamilyAdjacencyMatrix = familyadjacency_.getDptr();
 
+		// Initialize household connections to adjacencymatrices
 		int nextnode_ = 0;
 		for (int household = 0; household < amount_of_houses; household++)
 		{
@@ -694,7 +696,7 @@ public:
 
 		while (inf1count_ || inf2count_)
 		{
-			//std::cout << "This is day " << daysofepidemy_ << " of epidemic\n";
+			std::cout << "This is day " << daysofepidemy_ << " of epidemic\n";
 			InfectSusceptiple();
 			Diseasedata << (float)*AmountOfSusceptiple / (float)*Nodecount << ";" << (float)*AmountOfInfected1 / (float)*Nodecount << ";" << (float)*AmountOfInfected2 / (float)*Nodecount << ";" << (float)*AmountOfRecovered / (float)*Nodecount << ";" << (float)*AmountOfDeceased / (float)*Nodecount << "\n";
 		}
@@ -743,9 +745,6 @@ public:
 
 int main()
 {
-	// A program for simulating a single network
-
-	/*
 	int house_;
 	int* n_House = &house_;
 	int mixing_Pre;
@@ -767,7 +766,7 @@ int main()
 
 	Network_SIIRD Disease(1);
 	Disease.GenerateFamilies(0.005, *n_House, House_Conf, House_Coor);
-	Disease.MixingRandom(0.001, *n_Work, *n_House, House_Conf, Network_SIIRD::adult, true);
+	Disease.MixingRandom(0.001, *n_Work, *n_House, House_Conf, Network_SIIRD::adult);
 	Disease.MixingDistance(0.003, *n_Upper, *n_House, House_Conf, House_Coor, Network_SIIRD::upper);
 	Disease.MixingDistance(0.003, *n_Pre, *n_House, House_Conf, House_Coor, Network_SIIRD::pre);
 	Disease.allocPtrs();
@@ -776,76 +775,6 @@ int main()
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 	std::cout << "Simulation took " << duration.count() << " microseconds.\n";
-	*/
-
-	
-
-	// A programm for simulating multiple combinations of parameters
-
-	srand(4);
-
-	int house_;
-	int* n_House = &house_;
-	int mixing_Pre;
-	int* n_Pre = &mixing_Pre;
-	int mixing_Upper;
-	int* n_Upper = &mixing_Upper;
-	int mixing_Work;
-	int* n_Work = &mixing_Work;
-
-	std::filesystem::create_directory("AllSimulations");
-
-	int householdsizes[1] = { 1500 };
-	float recoveredamount[1] = { 0.9 };
-	int simround_ = 9;
-
-	for (int size_ : householdsizes)
-	{
-		*n_House = size_;
-
-		if (size_ == 150)
-		{
-			*n_Pre = 2;
-			*n_Upper = 2;
-			*n_Work = 6;
-		}
-		else if (size_ == 1500)
-		{
-			*n_Pre = 4;
-			*n_Upper = 4;
-			*n_Work = 30;
-		}
-		else if (size_ == 15000)
-		{
-			*n_Pre = 10;
-			*n_Upper = 15;
-			*n_Work = 50;
-		}
-
-		for (float amount_ : recoveredamount)
-		{
-			std::string filepath_ = "AllSimulations/sims_" + std::to_string(simround_) + "/";
-			std::filesystem::create_directory(filepath_);
-
-			for (int i = 2; i < 3; i++)
-			{
-				Matrix<int> M_house_conf(*n_House, 4);
-				Matrix<int> M_house_coor(*n_House, 2);
-				int** House_Conf = M_house_conf.getDptr();
-				int** House_Coor = M_house_coor.getDptr();
-
-				Network_SIIRD Disease(500);
-				Disease.GenerateFamilies(0.005, *n_House, House_Conf, House_Coor);
-				Disease.MixingRandom(0.001, *n_Work, *n_House, House_Conf, Network_SIIRD::adult);
-				Disease.MixingDistance(0.003, *n_Upper, *n_House, House_Conf, House_Coor, Network_SIIRD::upper);
-				Disease.MixingDistance(0.003, *n_Pre, *n_House, House_Conf, House_Coor, Network_SIIRD::pre);
-				Disease.allocPtrs();
-				Disease.SimulateDisease(i, size_, 10, 0, amount_, filepath_);
-				std::cout << "Simulation " << i <<  " done\n";
-			}
-			std::cout << "Simround " << simround_ << " done\n";
-		}
-	}
 }
 
 
